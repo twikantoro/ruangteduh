@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruang Teduh — Idle Relaxation & Serenity Haven</title>
+    <meta name="description" content="Situs web idle visual relaksasi dan penenang pikiran untuk istirahat kerja sejenak.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20%220%22%20100%20100><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+</head>
+<body>
+    <!-- Background Canvas for Real-time Scenes -->
+    <canvas id="scene-canvas"></canvas>
+
+    <!-- UI Overlay (Auto-hides on inactivity) -->
+    <div id="ui-container">
+        <!-- Top Navigation & Controls -->
+        <header id="ui-top">
+            <!-- Brand -->
+            <div class="glass-panel brand-badge">
+                <span class="brand-icon">🌿</span>
+                <span class="brand-text">Ruang Teduh</span>
+            </div>
+
+            <!-- Rest Timer / Clock -->
+            <div id="break-timer" class="glass-panel timer-pill" title="Klik untuk beralih antara Jam & Waktu Istirahat">
+                <div class="timer-pulse-dot"></div>
+                <span class="timer-tag">Istirahat</span>
+                <span class="timer-digits">00:00</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="top-controls">
+                <!-- Sound Toggle -->
+                <button id="btn-audio-toggle" class="control-btn" title="Nyalakan / Matikan Suara Alami (M)">
+                    <span class="icon">🔇</span>
+                    <span class="label">Suara Senyap</span>
+                </button>
+
+                <!-- Sound Mixer Drawer Button -->
+                <button id="btn-open-mixer" class="control-btn icon-btn-only" title="Atur Campuran Suara (Mixer)">
+                    🎚️
+                </button>
+
+                <!-- Fullscreen -->
+                <button id="btn-fullscreen" class="control-btn icon-btn-only" title="Layar Penuh (F)">
+                    ⛶
+                </button>
+
+                <!-- Info & Keyboard Shortcuts -->
+                <button id="btn-info" class="control-btn icon-btn-only" title="Panduan & Pintasan Tombol">
+                    ℹ️
+                </button>
+            </div>
+        </header>
+
+        <!-- Bottom Controls & Affirmations -->
+        <footer id="ui-bottom">
+            <!-- Mindful Floating Quote -->
+            <div id="mindful-quote-box" class="glass-panel">
+                <div class="quote-text">"Tarik napas perlahan... Biarkan bahumu rileks."</div>
+                <div class="quote-author">— Ruang Tenang</div>
+            </div>
+
+            <!-- Scene Switcher Navigation -->
+            <nav class="glass-panel scene-pill-bar">
+                <button class="scene-tab active" data-scene="koi" title="Kolam Ikan Koi Tenang (Tekan 1)">
+                    <span class="scene-icon">🌸</span>
+                    <span class="scene-label">Kolam Koi</span>
+                </button>
+                <button class="scene-tab" data-scene="aurora" title="Langit Aurora & Kunang-kunang (Tekan 2)">
+                    <span class="scene-icon">🌌</span>
+                    <span class="scene-label">Aurora Langit</span>
+                </button>
+                <button class="scene-tab" data-scene="rain" title="Gerimis di Balik Jendela Kaca (Tekan 3)">
+                    <span class="scene-icon">🌧️</span>
+                    <span class="scene-label">Hujan Kaca</span>
+                </button>
+                <button class="scene-tab" data-scene="breath" title="Latihan Pernapasan Berirama (Tekan 4)">
+                    <span class="scene-icon">🫁</span>
+                    <span class="scene-label">Napas Damai</span>
+                </button>
+            </nav>
+        </footer>
+    </div>
+
+    <!-- Audio Mixer Modal -->
+    <div id="audio-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">🎚️ Pengatur Suara Alami</h3>
+                <button id="btn-close-audio-modal" class="close-btn" title="Tutup">✕</button>
+            </div>
+
+            <div class="mixer-content">
+                <!-- Master Volume -->
+                <div class="mixer-channel">
+                    <div class="channel-header">
+                        <span class="channel-label">🔊 Volume Utama</span>
+                    </div>
+                    <input type="range" id="master-vol" min="0" max="1" step="0.01" value="0.6">
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Drone 432Hz -->
+                <div class="mixer-channel">
+                    <div class="channel-header">
+                        <span class="channel-label">✨ Alunan Drone 432Hz</span>
+                        <label class="channel-toggle">
+                            <input type="checkbox" id="toggle-drone" checked> Aktif
+                        </label>
+                    </div>
+                    <input type="range" id="vol-drone" min="0" max="1" step="0.01" value="0.35">
+                </div>
+
+                <!-- Rain -->
+                <div class="mixer-channel">
+                    <div class="channel-header">
+                        <span class="channel-label">🌧️ Gemercik Hujan Lembut</span>
+                        <label class="channel-toggle">
+                            <input type="checkbox" id="toggle-rain" checked> Aktif
+                        </label>
+                    </div>
+                    <input type="range" id="vol-rain" min="0" max="1" step="0.01" value="0.25">
+                </div>
+
+                <!-- Ocean Waves -->
+                <div class="mixer-channel">
+                    <div class="channel-header">
+                        <span class="channel-label">🌊 Desau Ombak & Angin</span>
+                        <label class="channel-toggle">
+                            <input type="checkbox" id="toggle-ocean" checked> Aktif
+                        </label>
+                    </div>
+                    <input type="range" id="vol-ocean" min="0" max="1" step="0.01" value="0.3">
+                </div>
+
+                <!-- Zen Chimes -->
+                <div class="mixer-channel">
+                    <div class="channel-header">
+                        <span class="channel-label">🔔 Lonceng Zen Singing Bowl</span>
+                        <label class="channel-toggle">
+                            <input type="checkbox" id="toggle-chimes" checked> Aktif
+                        </label>
+                    </div>
+                    <input type="range" id="vol-chimes" min="0" max="1" step="0.01" value="0.4">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info & Shortcuts Modal -->
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">🌿 Tentang Ruang Teduh</h3>
+                <button id="btn-close-info-modal" class="close-btn" title="Tutup">✕</button>
+            </div>
+
+            <div class="info-content">
+                <div class="info-section">
+                    <h4>Tujuan Situs</h4>
+                    <p>Tempat rehat visual dan audio saat kamu lelah bekerja di depan laptop/komputer. Biarkan situs ini terbuka tanpa perlu interaksi, layar akan otomatis bersih dari tombol setelah beberapa detik.</p>
+                </div>
+
+                <div class="info-section">
+                    <h4>Interaksi Ringan</h4>
+                    <p>• Gerakkan kursor atau klik untuk membuat riak air, jejak debu bintang, atau menyeka embun kaca.</p>
+                    <p>• Semua suara dihasilkan langsung secara prosedural tanpa kuota/koneksi internet eksternal.</p>
+                </div>
+
+                <div class="info-section">
+                    <h4>Pintasan Keyboard</h4>
+                    <div class="shortcut-grid">
+                        <div class="shortcut-item"><kbd>1</kbd> - <kbd>4</kbd> Ganti Suasana</div>
+                        <div class="shortcut-item"><kbd>M</kbd> Suara / Mute</div>
+                        <div class="shortcut-item"><kbd>F</kbd> Layar Penuh</div>
+                        <div class="shortcut-item"><kbd>Space</kbd> Denting Lonceng</div>
+                        <div class="shortcut-item"><kbd>H</kbd> Sembunyikan Menu</div>
+                        <div class="shortcut-item"><kbd>Esc</kbd> Tutup Jendela</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Synthesizer Engine -->
+    <script src="js/audio.js"></script>
+
+    <!-- Visual Scenes -->
+    <script src="js/scenes/koi.js?v=1.1"></script>
+    <script src="js/scenes/aurora.js?v=1.1"></script>
+    <script src="js/scenes/rain.js?v=1.1"></script>
+    <script src="js/scenes/breath.js?v=1.1"></script>
+
+    <!-- Mindful Quotes Engine -->
+    <script src="js/quotes.js"></script>
+
+    <!-- Main Controller -->
+    <script src="js/app.js"></script>
+</body>
+</html>
